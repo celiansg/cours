@@ -25,6 +25,7 @@ type AppSettings = {
 
 const DAY_MS = 86_400_000;
 const CALENDAR_VERSION = 'bts-erpc-2e-2026-2027-v1';
+const SCHEDULE_VERSION = 'celian-2026-2027-v1';
 const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
 const importedHolidays = ['2026-11-11', '2027-03-29', '2027-05-06', '2027-05-07', '2027-05-17'];
 const schoolRanges: [string, string][] = [
@@ -42,21 +43,23 @@ const defaultSettings: AppSettings = {
   excludedDates: importedHolidays,
 };
 const defaultCourses: Course[] = [
-  { id: 'm1', day: 1, name: 'Anglais', start: '08:00', end: '10:00', room: 'A101', type: 'course' },
-  { id: 'm2', day: 1, name: 'Technologie graphique', start: '10:00', end: '12:00', room: 'B204', type: 'course' },
-  { id: 'm3', day: 1, name: 'Pause déjeuner', start: '12:00', end: '13:00', room: '', type: 'break' },
-  { id: 'm4', day: 1, name: 'PAO', start: '13:00', end: '15:00', room: 'C301', type: 'course' },
-  { id: 'm5', day: 1, name: 'Atelier', start: '15:00', end: '17:00', room: 'Atelier 1', type: 'work' },
-  { id: 't1', day: 2, name: 'Marketing digital', start: '08:30', end: '10:30', room: 'B102', type: 'course' },
-  { id: 't2', day: 2, name: 'Projet tutoré', start: '10:45', end: '12:30', room: 'Lab 2', type: 'work' },
-  { id: 't3', day: 2, name: 'Pause déjeuner', start: '12:30', end: '13:30', room: '', type: 'break' },
-  { id: 't4', day: 2, name: 'Communication', start: '13:30', end: '16:30', room: 'A204', type: 'course' },
-  { id: 'w1', day: 3, name: 'ERPC', start: '09:00', end: '12:00', room: 'B204', type: 'course' },
-  { id: 'w2', day: 3, name: 'Design d’interface', start: '13:00', end: '17:00', room: 'Studio', type: 'work' },
-  { id: 'h1', day: 4, name: 'Alternance', start: '09:00', end: '12:30', room: 'Agence', type: 'work' },
-  { id: 'h2', day: 4, name: 'Alternance', start: '13:30', end: '17:00', room: 'Agence', type: 'work' },
-  { id: 'f1', day: 5, name: 'Culture graphique', start: '08:30', end: '11:30', room: 'A101', type: 'course' },
-  { id: 'f2', day: 5, name: 'Projet créatif', start: '13:00', end: '16:00', room: 'Atelier 1', type: 'work' },
+  { id: 'mon-physics', day: 1, name: 'Physique-chimie', start: '08:05', end: '10:10', room: '323 · TP optique', type: 'course' },
+  { id: 'mon-industry', day: 1, name: 'Industrie graphique', start: '13:00', end: '15:45', room: 'P119 · RPIP Technologie', type: 'course' },
+  { id: 'mon-support', day: 1, name: 'Accompagnement personnalisé', start: '15:45', end: '16:55', room: 'P119 · RPIP Technologie', type: 'course' },
+  { id: 'tue-maths', day: 2, name: 'Mathématiques', start: '08:05', end: '10:10', room: '201 LV', type: 'course' },
+  { id: 'tue-complement-1', day: 2, name: 'Complément 35', start: '10:10', end: '11:05', room: '203 LV', type: 'course' },
+  { id: 'tue-complement-2', day: 2, name: 'Complément 35', start: '11:05', end: '12:00', room: '126', type: 'course' },
+  { id: 'tue-science', day: 2, name: 'Enseignement scientifique en LV', start: '13:00', end: '13:55', room: 'P119 · RPIP Technologie', type: 'course' },
+  { id: 'wed-industry-1', day: 3, name: 'Industrie graphique', start: '08:05', end: '09:00', room: 'P119 · RPIP Technologie', type: 'course' },
+  { id: 'wed-industry-2', day: 3, name: 'Industrie graphique', start: '09:00', end: '12:00', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'wed-industry-3', day: 3, name: 'Industrie graphique', start: '13:55', end: '14:50', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'wed-support', day: 3, name: 'Accompagnement personnalisé', start: '14:50', end: '15:45', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'thu-culture', day: 4, name: 'Culture générale et expression', start: '08:05', end: '10:10', room: '123', type: 'course' },
+  { id: 'thu-english', day: 4, name: 'Anglais LV1', start: '10:10', end: '12:00', room: '133 LV', type: 'course' },
+  { id: 'thu-industry-1', day: 4, name: 'Industrie graphique', start: '13:55', end: '16:55', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'thu-industry-2', day: 4, name: 'Industrie graphique', start: '16:55', end: '17:50', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'fri-industry-1', day: 5, name: 'Industrie graphique', start: '08:05', end: '12:00', room: 'P105 · Labo PAO 2', type: 'course' },
+  { id: 'fri-industry-2', day: 5, name: 'Industrie graphique', start: '13:00', end: '16:55', room: 'P105 · Labo PAO 2', type: 'course' },
 ];
 
 function clamp(value: number, min = 0, max = 100) { return Math.min(max, Math.max(min, value)); }
@@ -179,7 +182,7 @@ const navItems: { id: Tab; label: string; icon: typeof Home }[] = [{ id: 'home',
 export default function Page() {
   const [tab, setTab] = useState<Tab>('home'); const [now, setNow] = useState(() => new Date()); const [settings, setSettings] = useState(defaultSettings); const [courses, setCourses] = useState(defaultCourses); const [hydrated, setHydrated] = useState(false);
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 1000); return () => window.clearInterval(timer); }, []);
-  useEffect(() => { try { const savedSettings = localStorage.getItem('tempo-settings'); const savedCourses = localStorage.getItem('tempo-courses'); if (savedSettings) { const parsed = JSON.parse(savedSettings) as AppSettings; if (localStorage.getItem('tempo-calendar-version') !== CALENDAR_VERSION) { setSettings({ ...parsed, schoolStart: '2026-09-01', schoolEnd: '2027-07-31', excludedDates: importedHolidays }); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } else setSettings(parsed); } else { setSettings(defaultSettings); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } if (savedCourses) setCourses(JSON.parse(savedCourses)); } finally { setHydrated(true); } }, []);
+  useEffect(() => { try { const savedSettings = localStorage.getItem('tempo-settings'); const savedCourses = localStorage.getItem('tempo-courses'); if (savedSettings) { const parsed = JSON.parse(savedSettings) as AppSettings; if (localStorage.getItem('tempo-calendar-version') !== CALENDAR_VERSION) { setSettings({ ...parsed, schoolStart: '2026-09-01', schoolEnd: '2027-07-31', excludedDates: importedHolidays }); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } else setSettings(parsed); } else { setSettings(defaultSettings); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } if (localStorage.getItem('tempo-schedule-version') !== SCHEDULE_VERSION) { setCourses(defaultCourses); localStorage.setItem('tempo-schedule-version', SCHEDULE_VERSION); } else if (savedCourses) setCourses(JSON.parse(savedCourses)); } finally { setHydrated(true); } }, []);
   useEffect(() => { if (hydrated) { localStorage.setItem('tempo-settings', JSON.stringify(settings)); localStorage.setItem('tempo-courses', JSON.stringify(courses)); } }, [settings, courses, hydrated]);
   useEffect(() => { const context = (document as Document & { modelContext?: { registerTool: (tool: unknown, options?: { signal?: AbortSignal }) => void | Promise<void> } }).modelContext; if (!context?.registerTool) return; const lifecycle = new AbortController(); void Promise.resolve(context.registerTool({ name: 'update_school_period', title: 'Mettre à jour l’année scolaire', description: 'Met à jour les dates et le mode de calcul de la progression annuelle affichée dans Tempo.', inputSchema: { type: 'object', properties: { start: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, end: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, mode: { type: 'string', enum: ['calendar', 'work'] } }, required: ['start', 'end', 'mode'], additionalProperties: false }, annotations: { readOnlyHint: false, untrustedContentHint: false }, execute(input: unknown) { const value = input as { start?: string; end?: string; mode?: 'calendar' | 'work' }; if (!value.start || !value.end || value.start >= value.end || !['calendar', 'work'].includes(value.mode ?? '')) throw new Error('Période ou mode invalide'); setSettings(prev => ({ ...prev, schoolStart: value.start!, schoolEnd: value.end!, calculationMode: value.mode! })); return { status: 'updated', start: value.start, end: value.end, mode: value.mode }; } }, { signal: lifecycle.signal })).catch(() => {}); return () => lifecycle.abort(); }, []);
   const hourly = settings.manualRateEnabled ? settings.manualRate : settings.salary / (settings.hoursWeek * 52 / 12);
