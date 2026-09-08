@@ -25,7 +25,7 @@ type AppSettings = {
 
 const DAY_MS = 86_400_000;
 const CALENDAR_VERSION = 'bts-erpc-2e-2026-2027-v1';
-const SCHEDULE_VERSION = 'celian-2026-2027-v1';
+const SCHEDULE_VERSION = 'celian-2026-2027-v2';
 const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven'];
 const importedHolidays = ['2026-11-11', '2027-03-29', '2027-05-06', '2027-05-07', '2027-05-17'];
 const schoolRanges: [string, string][] = [
@@ -182,7 +182,14 @@ const navItems: { id: Tab; label: string; icon: typeof Home }[] = [{ id: 'home',
 export default function Page() {
   const [tab, setTab] = useState<Tab>('home'); const [now, setNow] = useState(() => new Date()); const [settings, setSettings] = useState(defaultSettings); const [courses, setCourses] = useState(defaultCourses); const [hydrated, setHydrated] = useState(false);
   useEffect(() => { const timer = window.setInterval(() => setNow(new Date()), 1000); return () => window.clearInterval(timer); }, []);
-  useEffect(() => { try { const savedSettings = localStorage.getItem('tempo-settings'); const savedCourses = localStorage.getItem('tempo-courses'); if (savedSettings) { const parsed = JSON.parse(savedSettings) as AppSettings; if (localStorage.getItem('tempo-calendar-version') !== CALENDAR_VERSION) { setSettings({ ...parsed, schoolStart: '2026-09-01', schoolEnd: '2027-07-31', excludedDates: importedHolidays }); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } else setSettings(parsed); } else { setSettings(defaultSettings); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } if (localStorage.getItem('tempo-schedule-version') !== SCHEDULE_VERSION) { setCourses(defaultCourses); localStorage.setItem('tempo-schedule-version', SCHEDULE_VERSION); } else if (savedCourses) setCourses(JSON.parse(savedCourses)); } finally { setHydrated(true); } }, []);
+  useEffect(() => { try { const savedSettings = localStorage.getItem('tempo-settings'); const savedCourses = localStorage.getItem('tempo-courses'); if (savedSettings) { const parsed = JSON.parse(savedSettings) as AppSettings; if (localStorage.getItem('tempo-calendar-version') !== CALENDAR_VERSION) { setSettings({ ...parsed, schoolStart: '2026-09-01', schoolEnd: '2027-07-31', excludedDates: importedHolidays }); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } else setSettings(parsed); } else { setSettings(defaultSettings); localStorage.setItem('tempo-calendar-version', CALENDAR_VERSION); } if (localStorage.getItem('tempo-schedule-version') !== SCHEDULE_VERSION) { setVariousScheduleDefaults(); } else if (savedCourses) setCourses(JSON.parse(savedCourses)); } finally { setHydrated(true); }
+
+    function setVariousScheduleDefaults() {
+      setCourses(defaultCourses);
+      localStorage.setItem('tempo-courses', JSON.stringify(defaultCourses));
+      localStorage.setItem('tempo-schedule-version', SCHEDULE_VERSION);
+    }
+  }, []);
   useEffect(() => { if (hydrated) { localStorage.setItem('tempo-settings', JSON.stringify(settings)); localStorage.setItem('tempo-courses', JSON.stringify(courses)); } }, [settings, courses, hydrated]);
   useEffect(() => { const context = (document as Document & { modelContext?: { registerTool: (tool: unknown, options?: { signal?: AbortSignal }) => void | Promise<void> } }).modelContext; if (!context?.registerTool) return; const lifecycle = new AbortController(); void Promise.resolve(context.registerTool({ name: 'update_school_period', title: 'Mettre à jour l’année scolaire', description: 'Met à jour les dates et le mode de calcul de la progression annuelle affichée dans Tempo.', inputSchema: { type: 'object', properties: { start: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, end: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }, mode: { type: 'string', enum: ['calendar', 'work'] } }, required: ['start', 'end', 'mode'], additionalProperties: false }, annotations: { readOnlyHint: false, untrustedContentHint: false }, execute(input: unknown) { const value = input as { start?: string; end?: string; mode?: 'calendar' | 'work' }; if (!value.start || !value.end || value.start >= value.end || !['calendar', 'work'].includes(value.mode ?? '')) throw new Error('Période ou mode invalide'); setSettings(prev => ({ ...prev, schoolStart: value.start!, schoolEnd: value.end!, calculationMode: value.mode! })); return { status: 'updated', start: value.start, end: value.end, mode: value.mode }; } }, { signal: lifecycle.signal })).catch(() => {}); return () => lifecycle.abort(); }, []);
   const hourly = settings.manualRateEnabled ? settings.manualRate : settings.salary / (settings.hoursWeek * 52 / 12);
