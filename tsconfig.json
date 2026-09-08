@@ -16,7 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "types": ["node", "vite/client"],
-    "baseUrl": ".",
     "paths": { "@/*": ["./*"] }
   },
   "include": ["src", "app/page.tsx", "components", "lib", "hooks", "vite.config.ts", "**/*.d.ts"],
