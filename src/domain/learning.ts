@@ -28,6 +28,23 @@ export interface LearningCourse {
   demo?: boolean;
 }
 
+export interface CoursePhotoAnalysis {
+  title: string;
+  description: string;
+  summary: string;
+  keyPoints: string[];
+  definitions: { term: string; definition: string }[];
+  formulas: { formula: string; explanation: string }[];
+  methods: { title: string; steps: string[] }[];
+  examples: { title: string; content: string }[];
+  warnings: { title: string; content: string }[];
+  flashcards: {
+    question: string;
+    answer: string;
+    difficulty: FlashcardDifficulty;
+  }[];
+}
+
 export interface Flashcard {
   id: string;
   subjectId: string;
