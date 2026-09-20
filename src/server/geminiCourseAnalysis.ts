@@ -43,7 +43,6 @@ function isCoursePhotoAnalysis(value: unknown): value is CoursePhotoAnalysis {
 
 const responseSchema = {
   type: 'object',
-  additionalProperties: false,
   properties: {
     title: { type: 'string', description: 'Titre court et précis du cours.' },
     description: { type: 'string', description: 'Sous-titre en une phrase.' },
@@ -62,7 +61,6 @@ const responseSchema = {
       maxItems: 8,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: {
           term: { type: 'string' },
           definition: { type: 'string' },
@@ -75,7 +73,6 @@ const responseSchema = {
       maxItems: 6,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: {
           formula: { type: 'string' },
           explanation: { type: 'string' },
@@ -88,7 +85,6 @@ const responseSchema = {
       maxItems: 5,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: {
           title: { type: 'string' },
           steps: {
@@ -106,7 +102,6 @@ const responseSchema = {
       maxItems: 5,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: { title: { type: 'string' }, content: { type: 'string' } },
         required: ['title', 'content'],
       },
@@ -116,7 +111,6 @@ const responseSchema = {
       maxItems: 5,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: { title: { type: 'string' }, content: { type: 'string' } },
         required: ['title', 'content'],
       },
@@ -127,7 +121,6 @@ const responseSchema = {
       maxItems: 18,
       items: {
         type: 'object',
-        additionalProperties: false,
         properties: {
           question: { type: 'string' },
           answer: { type: 'string' },
