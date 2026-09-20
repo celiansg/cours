@@ -1,4 +1,4 @@
-import { analyzeCoursePhoto } from '../src/server/geminiCourseAnalysis';
+import { analyzeCoursePhoto } from '../src/server/geminiCourseAnalysis.js';
 
 interface ApiRequest {
   method?: string;
