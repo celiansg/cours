@@ -1710,6 +1710,7 @@ export default function Page() {
             data={learning.data}
             progress={learning.progress}
             onDataChange={updateLearningData}
+            onProgressChange={updateRevisionProgress}
             onStartRevision={startRevision}
             onOpenSettings={openSettings}
           />

@@ -1963,6 +1963,92 @@ body {
 .back-button svg {
   width: 19px;
 }
+.delete-course-trigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid rgba(202, 59, 91, 0.16);
+  border-radius: 13px;
+  background: rgba(255, 242, 246, 0.78);
+  color: #b43c5d;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 740;
+  cursor: pointer;
+}
+.delete-course-trigger svg {
+  width: 16px;
+}
+.delete-course-modal {
+  width: min(430px, calc(100vw - 30px));
+  margin: auto;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  background: rgba(255, 252, 253, 0.94);
+  box-shadow: 0 30px 90px rgba(47, 25, 48, 0.22);
+  text-align: center;
+}
+.delete-course-modal::backdrop {
+  background: transparent;
+}
+.delete-course-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 16px;
+  border-radius: 19px;
+  background: linear-gradient(135deg, #ffd9df, #ffedf2);
+  color: #be3e60;
+}
+.delete-course-icon svg {
+  width: 24px;
+}
+.delete-course-modal h2 {
+  margin: 7px 0 10px;
+  font-size: 1.45rem;
+  letter-spacing: -0.04em;
+}
+.delete-course-modal > p:last-of-type {
+  margin: 0;
+  color: #766c79;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.delete-course-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 10px;
+  margin-top: 24px;
+}
+.delete-course-actions button {
+  min-height: 46px;
+  border: 0;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 760;
+  cursor: pointer;
+}
+.delete-course-actions button:first-child {
+  background: #f1edf3;
+  color: #62596a;
+}
+.delete-course-actions button:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: linear-gradient(135deg, #d64969, #b52e55);
+  color: white;
+  box-shadow: 0 10px 24px rgba(181, 46, 85, 0.2);
+}
+.delete-course-actions svg {
+  width: 16px;
+}
 .subject-detail-hero,
 .lesson-hero {
   position: relative;

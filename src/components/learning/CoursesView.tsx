@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   Sigma,
   Sparkles,
+  Trash2,
   WandSparkles,
   X,
 } from 'lucide-react';
@@ -509,6 +510,7 @@ interface CoursesViewProps {
   data: LearningData;
   progress: RevisionProgress;
   onDataChange: (data: LearningData) => void;
+  onProgressChange: (progress: RevisionProgress) => void;
   onStartRevision: (courseIds: string[]) => void;
   onOpenSettings: () => void;
 }
@@ -517,6 +519,7 @@ export function CoursesView({
   data,
   progress,
   onDataChange,
+  onProgressChange,
   onStartRevision,
   onOpenSettings,
 }: CoursesViewProps) {
@@ -529,6 +532,7 @@ export function CoursesView({
   const [newSubjectName, setNewSubjectName] = useState('');
   const [newCourseName, setNewCourseName] = useState('');
   const [showImport, setShowImport] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const subject = data.subjects.find((item) => item.id === subjectId);
   const course = data.courses.find((item) => item.id === courseId);
   const subjectCourses = useMemo(
@@ -569,6 +573,32 @@ export function CoursesView({
     setNewCourseName('');
     setShowCourseForm(false);
   };
+  const deleteCourse = (courseToDelete: LearningCourse) => {
+    const removedCardIds = new Set(
+      data.flashcards
+        .filter((card) => card.courseId === courseToDelete.id)
+        .map((card) => card.id),
+    );
+    const masteryByCard = Object.fromEntries(
+      Object.entries(progress.masteryByCard).filter(
+        ([cardId]) => !removedCardIds.has(cardId),
+      ),
+    );
+
+    onDataChange({
+      ...data,
+      courses: data.courses.filter((item) => item.id !== courseToDelete.id),
+      flashcards: data.flashcards.filter(
+        (card) => card.courseId !== courseToDelete.id,
+      ),
+      quizQuestions: data.quizQuestions.filter(
+        (question) => question.courseId !== courseToDelete.id,
+      ),
+    });
+    onProgressChange({ ...progress, masteryByCard });
+    setShowDeleteConfirm(false);
+    setCourseId(null);
+  };
   const importModal = showImport ? (
     <CourseImportModal
       data={data}
@@ -593,9 +623,17 @@ export function CoursesView({
             <button className="back-button" onClick={() => setCourseId(null)}>
               <ArrowLeft /> <span>{subject.name}</span>
             </button>
-            <button className="avatar small-avatar" onClick={onOpenSettings}>
-              CS
-            </button>
+            <div className="header-actions">
+              <button
+                className="delete-course-trigger"
+                onClick={() => setShowDeleteConfirm(true)}
+              >
+                <Trash2 /> <span>Supprimer</span>
+              </button>
+              <button className="avatar small-avatar" onClick={onOpenSettings}>
+                CS
+              </button>
+            </div>
           </header>
           <div
             className="lesson-hero"
@@ -641,6 +679,41 @@ export function CoursesView({
             )}
           </div>
         </section>
+        {showDeleteConfirm ? (
+          <div
+            className="course-import-backdrop"
+            role="presentation"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget)
+                setShowDeleteConfirm(false);
+            }}
+          >
+            <dialog
+              open
+              className="delete-course-modal"
+              aria-labelledby="delete-course-title"
+            >
+              <span className="delete-course-icon">
+                <Trash2 />
+              </span>
+              <p className="eyebrow">Suppression du cours</p>
+              <h2 id="delete-course-title">Supprimer « {course.title} » ?</h2>
+              <p>
+                La fiche, ses {cards.length} carte
+                {cards.length === 1 ? '' : 's'} de révision et la progression
+                associée seront supprimées de cet appareil.
+              </p>
+              <div className="delete-course-actions">
+                <button onClick={() => setShowDeleteConfirm(false)}>
+                  Annuler
+                </button>
+                <button onClick={() => deleteCourse(course)}>
+                  <Trash2 /> Supprimer définitivement
+                </button>
+              </div>
+            </dialog>
+          </div>
+        ) : null}
         {importModal}
       </>
     );
