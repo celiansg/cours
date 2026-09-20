@@ -1318,7 +1318,9 @@ function SettingsScreen({
         <div className="pwa-install-row">
           <div>
             <strong>
-              {isInstalled ? 'Tempo est installée' : 'Ajouter à l’écran d’accueil'}
+              {isInstalled
+                ? 'Tempo est installée'
+                : 'Ajouter à l’écran d’accueil'}
             </strong>
             <span>
               {isInstalled
@@ -1718,6 +1720,7 @@ export default function Page() {
             progress={learning.progress}
             requestedCourseIds={revisionRequest}
             onProgressChange={updateRevisionProgress}
+            onOpenCourses={() => setTab('courses')}
             onOpenSettings={openSettings}
           />
         )}

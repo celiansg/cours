@@ -173,7 +173,9 @@ function SubjectCard({
         <span className="subject-icon">
           <Icon />
         </span>
-        {subject.demo ? <span className="demo-pill">Démo</span> : null}
+        <span className="subject-ready-pill">
+          {courses.length ? `${courses.length} cours` : 'Prête'}
+        </span>
       </div>
       <h2>{subject.name}</h2>
       <p>{subject.description}</p>
@@ -182,7 +184,11 @@ function SubjectCard({
         <i /> <span>{cards.length} cartes</span>
       </div>
       <div className="subject-progress-row">
-        <strong>{mastery.percentage} % maîtrisé</strong>
+        <strong>
+          {cards.length
+            ? `${mastery.percentage} % maîtrisé`
+            : 'Ajouter mon premier cours'}
+        </strong>
         <ChevronRight />
       </div>
       <Progress value={mastery.percentage} className="mastery-progress" />
@@ -199,16 +205,12 @@ function blocksFromAnalysis(analysis: CoursePhotoAnalysis): CourseBlock[] {
       title: 'Résumé du cours',
       content: analysis.summary,
     },
-    ...(analysis.keyPoints.length
-      ? [
-          {
-            id: id(),
-            type: 'important' as const,
-            title: 'L’essentiel à retenir',
-            content: analysis.keyPoints.join(' • '),
-          },
-        ]
-      : []),
+    ...analysis.keyPoints.map((content, index) => ({
+      id: id(),
+      type: 'important' as const,
+      title: `Point clé ${index + 1}`,
+      content,
+    })),
     ...analysis.definitions.map((item) => ({
       id: id(),
       type: 'definition' as const,
@@ -601,9 +603,7 @@ export function CoursesView({
           >
             <div>
               <span className="demo-pill">
-                {course.demo
-                  ? 'Contenu de démonstration'
-                  : 'Créé depuis ta photo'}
+                {course.demo ? 'Exemple' : 'Créé depuis ta photo'}
               </span>
               <p>{subject.name}</p>
               <h1>{course.title}</h1>
@@ -683,9 +683,7 @@ export function CoursesView({
               <Icon />
             </span>
             <div>
-              <span className="demo-pill">
-                {subject.demo ? 'Démonstration' : 'Matière'}
-              </span>
+              <span className="demo-pill">Matière BTS ERPC</span>
               <h1>{subject.name}</h1>
               <p>
                 {cards.length} cartes · {mastery.percentage} % maîtrisé
@@ -707,10 +705,16 @@ export function CoursesView({
               />
             </div>
             <button
-              className="color-action"
+              className="color-action photo-course-action"
+              onClick={() => setShowImport(true)}
+            >
+              <Camera /> Ajouter depuis une photo
+            </button>
+            <button
+              className="manual-course-action"
               onClick={() => setShowCourseForm((value) => !value)}
             >
-              <Plus /> Ajouter un cours
+              <Plus /> Cours vide
             </button>
           </div>
           {showCourseForm ? (
@@ -727,31 +731,55 @@ export function CoursesView({
             </div>
           ) : null}
           <div className="course-list">
-            {subjectCourses.map((item) => {
-              const courseCards = cardsForCourse(item.id, data.flashcards);
-              const summary = summarizeMastery(courseCards, progress);
-              return (
-                <button key={item.id} onClick={() => setCourseId(item.id)}>
-                  <span className="course-list-icon">
-                    <BookOpen />
-                  </span>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>
-                      {courseCards.length} cartes ·{' '}
-                      {courseCards.length
-                        ? `${summary.percentage} % maîtrisé`
-                        : 'Non révisé'}
-                    </p>
-                    <Progress
-                      value={summary.percentage}
-                      className="mastery-progress small-progress"
-                    />
-                  </div>
-                  <ChevronRight />
+            {subjectCourses.length ? (
+              subjectCourses.map((item) => {
+                const courseCards = cardsForCourse(item.id, data.flashcards);
+                const summary = summarizeMastery(courseCards, progress);
+                return (
+                  <button key={item.id} onClick={() => setCourseId(item.id)}>
+                    <span className="course-list-icon">
+                      <BookOpen />
+                    </span>
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>
+                        {courseCards.length} cartes ·{' '}
+                        {courseCards.length
+                          ? `${summary.percentage} % maîtrisé`
+                          : 'Non révisé'}
+                      </p>
+                      <Progress
+                        value={summary.percentage}
+                        className="mastery-progress small-progress"
+                      />
+                    </div>
+                    <ChevronRight />
+                  </button>
+                );
+              })
+            ) : deferredQuery ? (
+              <div className="learning-empty compact-empty">
+                <Search />
+                <h3>Aucun cours trouvé</h3>
+                <p>Essaie un autre mot dans la recherche.</p>
+              </div>
+            ) : (
+              <div className="empty-subject-state">
+                <span className="empty-subject-icon">
+                  <Camera />
+                </span>
+                <div>
+                  <h3>Ajoute ton premier cours</h3>
+                  <p>
+                    Prends une photo : Tempo écrit la fiche, extrait les points
+                    essentiels et prépare les cartes de révision.
+                  </p>
+                </div>
+                <button onClick={() => setShowImport(true)}>
+                  <Camera /> Photographier mon cours
                 </button>
-              );
-            })}
+              </div>
+            )}
           </div>
         </section>
         {importModal}
@@ -784,13 +812,26 @@ export function CoursesView({
             </button>
           </div>
         </header>
-        <div className="demo-notice">
-          <Sparkles />
+        <div
+          className="learning-flow-banner"
+          aria-label="Fonctionnement des cours intelligents"
+        >
           <div>
-            <strong>Données de démonstration</strong>
-            <span>
-              Quelques exemples seulement, en attendant tes vrais cours.
-            </span>
+            <span>1</span>
+            <Camera />
+            <strong>Ajoute une photo</strong>
+          </div>
+          <ChevronRight />
+          <div>
+            <span>2</span>
+            <WandSparkles />
+            <strong>Tempo écrit ta fiche</strong>
+          </div>
+          <ChevronRight />
+          <div>
+            <span>3</span>
+            <Sparkles />
+            <strong>Les cartes sont prêtes</strong>
           </div>
         </div>
         <div className="subjects-grid">
